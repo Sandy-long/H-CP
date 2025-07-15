@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>钙磷平衡食物组合追踪</title>
+  <style>
+    :root {
+      --primary: #3498db;
+      --secondary: #9b59b6;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      color: #2c3e50;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    }
+    
+    h1 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+    }
+    
+    .subtitle {
+      color: #7f8c8d;
+      font-weight: normal;
+      font-size: 1rem;
+    }
+    
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .card h2 {
+      color: var(--secondary);
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #eee;
+      font-size: 1.4rem;
+    }
+    
+    /* 钙磷比例指示器 */
+    .ratio-indicator {
+      text-align: center;
+      margin: 15px 0;
+      padding: 12px;
+      background: linear-gradient(90deg, #3498db 0%, #9b59b6 100%);
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    
+    /* 钙磷双进度条 */
+    .dual-progress {
+      margin: 15px 0;
+      background: #e0e0e0;
+      border-radius: 8px;
+      height: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .calcium-progress {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+      transition: width 0.5s ease;
+    }
+    
+    .phosphorus-progress {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #9b59b6 0%, #8e44ad 100%);
+      transition: width 0.5s ease;
+    }
+    
+    /* 目标比例显示 */
+    .ratio-demo {
+      width: 180px;
+      height: 8px;
+      background: #ecf0f1;
+      border-radius: 4px;
+      position: relative;
+      margin: 10px auto;
+      overflow: hidden;
+    }
+    
+    .target-calcium {
+      position: absolute;
+      left: 0;
+      width: 67%;
+      height: 100%;
+      background: #3498db;
+      display: inline-block;
+    }
+    
+    .target-phosphorus {
+      position: absolute;
+      left: 67%;
+      width: 33%;
+      height: 100%;
+      background: #9b59b6;
+      display: inline-block;
+    }
+    
+    /* 食物网格布局（一行三个） */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 15px 0;
+    }
+    
+    @media (max-width: 480px) {
+      .food-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .food-item {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+      position: relative;
+      border: 2px solid transparent;
+    }
+    
+    .food-item:hover {
+      transform: scale(1.03);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary);
+    }
+    
+    .food-item.selected {
+      border-color: var(--success);
+      background: #e8f4f0;
+    }
+    
+    .food-icon {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+    
+    .food-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .food-ratio {
+      font-size: 0.75rem;
+      color: #7f8c8d;
+    }
+    
+    .food-calcium {
+      font-size: 0.7rem;
+      color: #3498db;
+      font-weight: bold;
+    }
+    
+    .food-phosphorus {
+      font-size: 0.7rem;
+      color: #9b59b6;
+      font-weight: bold;
+    }
+    
+    /* 表单样式 */
+    .form-row {
+      display: flex;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    
+    select, input {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      flex-grow: 1;
+    }
+    
+    select:focus, input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      display: block;
+      width: 100%;
+    }
+    
+    button:hover {
+      background: #219352;
+    }
+    
+    button.secondary {
+      background: #f39c12;
+    }
+    
+    button.danger {
+      background: #e74c3c;
+      margin-top: 15px;
+    }
+    
+    /* 日志条目样式 */
+    .log-entry {
+      background: #f8f9fa;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      font-size: 0.9rem;
+    }
+    
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .log-time {
+      color: #7f8c8d;
+      font-size: 0.8rem;
+    }
+    
+    .nutrients {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 5px;
+      font-size: 0.85rem;
+    }
+    
+    .nutrient-calcium {
+      color: #3498db;
+      font-weight: bold;
+    }
+    
+    .nutrient-phosphorus {
+      color: #9b59b6;
+      font-weight: bold;
+    }
+    
+    .ratio-value {
+      background: var(--secondary);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-left: 5px;
+    }
+    
+    .warning {
+      color: #e74c3c;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    
+    .tip-card {
+      background: #f1f8e9;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      font-size: 0.9rem;
+      border-left: 4px solid #7cb342;
+    }
+    
+    .tip-card h3 {
+      color: #558b2f;
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+    
+    .ratio-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    
+    .stats {
+      margin-top: 8px;
+    }
+    
+    .stats > div {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>钙磷平衡食物组合追踪</h1>
+    <p class="subtitle">优化您的钙磷摄入比例，达到理想的2:1</p>
+  </header>
+
+  <div class="tip-card">
+    <h3>📌 健康小贴士</h3>
+    <p>理想的钙磷摄入比例为2:1。长期不平衡可能导致骨质疏松或心血管问题。本应用帮助您选择钙磷比例接近目标的食物组合。</p>
+  </div>
+
+  <div class="ratio-indicator">
+    <div>当前钙磷比例: <span id="currentRatio">0:0</span></div>
+    <div class="ratio-container">
+      <div>目标比例：2:1</div>
+      <div class="ratio-demo">
+        <span class="target-calcium"></span>
+        <span class="target-phosphorus"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 左栏：富含钙磷的食物 -->
+    <div class="card">
+      <h2>富含钙磷的食物组合</h2>
+      <p>选择钙磷比接近2:1的食物组合，实现均衡营养</p>
+      
+      <div class="food-grid" id="foodGrid">
+        <!-- 食物项将通过JS插入 -->
+      </div>
+    </div>
+    
+    <!-- 右栏：摄入记录 -->
+    <div class="card">
+      <h2>摄入追踪</h2>
+      
+      <div class="stats">
+        <div>
+          钙: <span id="calciumAmount">0</span> / <span id="calciumGoal">800</span> mg
+          <div class="dual-progress">
+            <div class="calcium-progress" id="calciumProgress"></div>
+          </div>
+        </div>
+        <div>
+          磷: <span id="phosphorusAmount">0</span> / <span id="phosphorusGoal">400</span> mg
+          <div class="dual-progress">
+            <div class="phosphorus-progress" id="phosphorusProgress"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <select id="foodSelect" required>
+          <option value="" disabled selected>选择食物</option>
+          <option value="tofu">豆腐 (钙350mg, 磷57mg)</option>
+          <option value="driedShrimps">虾皮 (钙991mg, 磷582mg)</option>
+          <option value="cheese">奶酪 (钙721mg, 磷477mg)</option>
+          <option value="kale">羽衣甘蓝 (钙150mg, 磷92mg)</option>
+          <option value="driedSilverFish">银鱼干 (钙550mg, 磷400mg)</option>
+          <option value="spinach">菠菜 (钙99mg, 磷49mg)</option>
+          <option value="milk">牛奶 (钙104mg, 磷73mg)</option>
+          <option value="sardines">沙丁鱼 (钙382mg, 磷476mg)</option>
+          <option value="yogurt">酸奶 (钙110mg, 磷95mg)</option>
+          <option value="almonds">杏仁 (钙269mg, 磷481mg)</option>
+          <option value="broccoli">西兰花 (钙47mg, 磷66mg)</option>
+          <option value="salmon">三文鱼 (钙9mg, 磷200mg)</option>
+          <option value="pumpkin">南瓜籽 (钙46mg, 磷123mg)</option>
+          <option value="oats">燕麦 (钙54mg, 磷177mg)</option>
+          <option value="eggs">鸡蛋 (钙56mg, 磷200mg)</option>
+          <option value="porkLoin">里脊肉 (钙18mg, 磷220mg)</option>
+          <option value="chickenBreast">鸡胸肉 (钙14mg, 磷224mg)</option>
+          <option value="beefBrisket">牛腩 (钙20mg, 磷190mg)</option>
+          <option value="beef">牛肉 (钙11mg, 磷172mg)</option>
+          <option value="potatoes">土豆 (钙12mg, 磷40mg)</option>
+          <option value="tomatoes">西红柿 (钙10mg, 磷24mg)</option>
+          <option value="shiitakeMushrooms">香菇 (钙10mg, 磷60mg)</option>
+        </select>
+        <input type="number" id="quantity" min="1" value="100" placeholder="克数">
+      </div>
+      
+      <button id="logBtn">记录摄入</button>
+      
+      <h3 style="margin-top: 20px;">摄入日志</h3>
+      <div id="intakeLog"></div>
+      
+      <button id="resetBtn" class="danger">重置记录</button>
+    </div>
+  </div>
+
+  <script>
+    // 食物数据库（每100g含量）
+   const foods = {
+  tofu: { name: "北豆腐（老豆腐）", calcium: 138, phosphorus: 120, ratio: 1.15, icon: "🧈" },
+  driedShrimps: { name: "虾皮", calcium: 991, phosphorus: 582, ratio: 1.70, icon: "🍤" },
+  cheese: { name: "奶酪", calcium: 721, phosphorus: 512, ratio: 1.41, icon: "🧀" },
+  kale: { name: "羽衣甘蓝", calcium: 150, phosphorus: 92, ratio: 1.63, icon: "🥬" },
+  driedSilverFish: { name: "银鱼干", calcium: 550, phosphorus: 400, ratio: 1.38, icon: "🐠" },
+  spinach: { name: "菠菜", calcium: 99, phosphorus: 49, ratio: 2.02, icon: "🥬" },
+  milk: { name: "牛奶", calcium: 104, phosphorus: 73, ratio: 1.42, icon: "🥛" },
+  sardines: { name: "沙丁鱼", calcium: 382, phosphorus: 476, ratio: 0.80, icon: "🐠" },
+  yogurt: { name: "酸奶", calcium: 110, phosphorus: 95, ratio: 1.16, icon: "🥄" },
+  almonds: { name: "杏仁", calcium: 269, phosphorus: 481, ratio: 0.56, icon: "🌰" },
+  broccoli: { name: "西兰花", calcium: 47, phosphorus: 66, ratio: 0.71, icon: "🥦" },
+  salmon: { name: "三文鱼", calcium: 9, phosphorus: 200, ratio: 0.05, icon: "🐟" },
+  pumpkin: { name: "南瓜籽", calcium: 46, phosphorus: 123, ratio: 0.37, icon: "🎃" },
+  oats: { name: "燕麦", calcium: 54, phosphorus: 177, ratio: 0.31, icon: "🌾" },
+  eggs: { name: "鸡蛋", calcium: 56, phosphorus: 200, ratio: 0.28, icon: "🥚" },
+  porkLoin: { name: "里脊肉", calcium: 18, phosphorus: 220, ratio: 0.08, icon: "🍖" },
+  chickenBreast: { name: "鸡胸肉", calcium: 14, phosphorus: 224, ratio: 0.06, icon: "🍗" },
+  beefBrisket: { name: "牛腩", calcium: 20, phosphorus: 190, ratio: 0.11, icon: "🥩" },
+  beef: { name: "牛肉", calcium: 11, phosphorus: 172, ratio: 0.06, icon: "🥩" },
+  potatoes: { name: "土豆", calcium: 12, phosphorus: 40, ratio: 0.30, icon: "🥔" },
+  tomatoes: { name: "西红柿", calcium: 10, phosphorus: 24, ratio: 0.42, icon: "🍅" },
+  shiitakeMushrooms: { name: "香菇", calcium: 10, phosphorus: 60, ratio: 0.17, icon: "🍄" },
+   sesame: { name: "芝麻", calcium: 780, phosphorus: 516, ratio: 1.51, icon: "⚫" },
+  figs: { name: "无花果", calcium: 162, phosphorus: 67, ratio: 2.42, icon: "🍈" }
+};
+
+    let totalCalcium = 0;
+    let totalPhosphorus = 0;
+    const calciumGoal = 800; // 钙推荐摄入量 (mg)
+    const phosphorusGoal = 400; // 磷推荐摄入量 (钙磷比2:1)
+
+    // DOM元素
+    const foodGrid = document.getElementById('foodGrid');
+    const foodSelect = document.getElementById('foodSelect');
+    const quantityInput = document.getElementById('quantity');
+    const logBtn = document.getElementById('logBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const calciumAmount = document.getElementById('calciumAmount');
+    const phosphorusAmount = document.getElementById('phosphorusAmount');
+    const calciumProgress = document.getElementById('calciumProgress');
+    const phosphorusProgress = document.getElementById('phosphorusProgress');
+    const intakeLog = document.getElementById('intakeLog');
+    const currentRatio = document.getElementById('currentRatio');
+
+    // 初始化食物网格 - 按钙磷比降序排列
+    function initFoodGrid() {
+      // 按钙磷比值降序排序
+      const sortedKeys = Object.keys(foods).sort((a, b) => foods[b].ratio - foods[a].ratio);
+      
+      sortedKeys.forEach(key => {
+        const food = foods[key];
+        
+        const foodItem = document.createElement('div');
+        foodItem.className = 'food-item';
+        foodItem.dataset.id = key;
+        
+        foodItem.innerHTML = `
+          <div class="food-icon">${food.icon}</div>
+          <div class="food-name">${food.name}</div>
+          <div class="food-ratio">钙磷比: ${food.ratio.toFixed(2)}</div>
+          <div class="food-calcium">钙: ${food.calcium}mg</div>
+          <div class="food-phosphorus">磷: ${food.phosphorus}mg</div>
+        `;
+        
+        foodItem.addEventListener('click', () => {
+          foodSelect.value = key;
+          document.querySelectorAll('.food-item').forEach(item => {
+            item.classList.remove('selected');
+          });
+          foodItem.classList.add('selected');
+          quantityInput.focus();
+        });
+        
+        foodGrid.appendChild(foodItem);
+      });
+    }
+
+    // 更新进度条和比例
+    function updateProgress() {
+      const calciumPercent = Math.min(100, (totalCalcium / calciumGoal) * 100);
+      const phosphorusPercent = Math.min(100, (totalPhosphorus / phosphorusGoal) * 100);
+      
+      calciumProgress.style.width = `${calciumPercent}%`;
+      phosphorusProgress.style.width = `${phosphorusPercent}%`;
+      
+      calciumAmount.textContent = Math.round(totalCalcium);
+      phosphorusAmount.textContent = Math.round(totalPhosphorus);
+      
+      // 计算并显示钙磷比例
+      const ratio = totalPhosphorus > 0 ? totalCalcium / totalPhosphorus : 0;
+      currentRatio.textContent = ratio.toFixed(2) + ':1';
+      
+      // 根据比例给出提示
+      if (ratio > 0 && ratio < 1.5) {
+        currentRatio.innerHTML += ' <span class="warning">(磷偏高)</span>';
+      } else if (ratio > 2.5) {
+        currentRatio.innerHTML += ' <span class="warning">(钙偏高)</span>';
+      } else if (ratio >= 1.5 && ratio <= 2.5) {
+        currentRatio.innerHTML += ' <span style="color:#27ae60">(理想范围)</span>';
+      }
+    }
+
+    // 添加摄入记录
+    function logIntake(food, quantity) {
+      const calcium = food.calcium * quantity / 100;
+      const phosphorus = food.phosphorus * quantity / 100;
+      const ratio = phosphorus > 0 ? calcium / phosphorus : 0;
+      
+      totalCalcium += calcium;
+      totalPhosphorus += phosphorus;
+      
+      // 创建日志条目
+      const logEntry = document.createElement('div');
+      logEntry.className = 'log-entry';
+      
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      logEntry.innerHTML = `
+        <div class="log-header">
+          <span>${food.icon} ${food.name} - ${quantity}g</span>
+          <span class="log-time">${timeStr}</span>
+        </div>
+        <div class="nutrients">
+          <span class="nutrient-calcium">钙: ${calcium.toFixed(0)}mg</span>
+          <span class="nutrient-phosphorus">磷: ${phosphorus.toFixed(0)}mg</span>
+          <span>钙磷比: <span class="ratio-value">${ratio.toFixed(2)}:1</span></span>
+        </div>
+      `;
+      
+      // 添加到日志顶部
+      intakeLog.insertBefore(logEntry, intakeLog.firstChild);
+      
+      // 更新UI和保存到LocalStorage
+      updateProgress();
+      saveToLocalStorage();
+    }
+
+    // 保存数据到本地存储
+    function saveToLocalStorage() {
+      const data = {
+        totalCalcium,
+        totalPhosphorus,
+        logHTML: intakeLog.innerHTML,
+        currentRatio: currentRatio.innerHTML
+      };
+      
+      localStorage.setItem('phosphorusTracker', JSON.stringify(data));
+    }
+
+    // 从本地存储加载数据
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem('phosphorusTracker');
+      if (saved) {
+        const data = JSON.parse(saved);
+        
+        totalCalcium = data.totalCalcium || 0;
+        totalPhosphorus = data.totalPhosphorus || 0;
+        intakeLog.innerHTML = data.logHTML || '';
+        currentRatio.innerHTML = data.currentRatio || '0:0';
+        
+        updateProgress();
+      }
+    }
+
+    // 初始化事件监听器
+    function initEventListeners() {
+      // 记录摄入按钮
+      logBtn.addEventListener('click', () => {
+        const foodKey = foodSelect.value;
+        const quantity = parseFloat(quantityInput.value);
+        
+        if (!foodKey) {
+          alert('请选择一种食物');
+          return;
+        }
+        
+        if (isNaN(quantity) || quantity <= 0) {
+          alert('请输入有效的食量值');
+          return;
+        }
+        
+        const food = foods[foodKey];
+        logIntake(food, quantity);
+      });
+      
+      // 重置按钮
+      resetBtn.addEventListener('click', () => {
+        if (confirm("确定要重置所有记录吗？这将清除所有摄入数据。")) {
+          totalCalcium = 0;
+          totalPhosphorus = 0;
+          intakeLog.innerHTML = '';
+          currentRatio.innerHTML = '0:0';
+          updateProgress();
+          localStorage.removeItem('phosphorusTracker');
+          
+          // 添加重置成功反馈
+          const feedback = document.createElement('div');
+          feedback.className = 'log-entry';
+          feedback.style.backgroundColor = '#f8f9fa';
+          feedback.style.textAlign = 'center';
+          feedback.style.color = '#27ae60';
+          feedback.innerHTML = '所有记录已重置！';
+          intakeLog.appendChild(feedback);
+          
+          setTimeout(() => {
+            feedback.style.display = 'none';
+          }, 3000);
+        }
+      });
+    }
+
+    // 初始化应用
+    function initApp() {
+      initFoodGrid();
+      loadFromLocalStorage();
+      updateProgress();
+      initEventListeners();
+    }
+
+    // 启动应用
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
