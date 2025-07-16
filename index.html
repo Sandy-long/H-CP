@@ -391,31 +391,36 @@
       
       <div class="form-row">
         <select id="foodSelect" required>
-          <option value="" disabled selected>选择食物</option>
-          <option value="tofu">豆腐 (钙350mg, 磷57mg)</option>
-          <option value="driedShrimps">虾皮 (钙991mg, 磷582mg)</option>
-          <option value="cheese">奶酪 (钙721mg, 磷477mg)</option>
-          <option value="kale">羽衣甘蓝 (钙150mg, 磷92mg)</option>
-          <option value="driedSilverFish">银鱼干 (钙550mg, 磷400mg)</option>
-          <option value="spinach">菠菜 (钙99mg, 磷49mg)</option>
-          <option value="milk">牛奶 (钙104mg, 磷73mg)</option>
-          <option value="sardines">沙丁鱼 (钙382mg, 磷476mg)</option>
-          <option value="yogurt">酸奶 (钙110mg, 磷95mg)</option>
-          <option value="almonds">杏仁 (钙269mg, 磷481mg)</option>
-          <option value="broccoli">西兰花 (钙47mg, 磷66mg)</option>
-          <option value="salmon">三文鱼 (钙9mg, 磷200mg)</option>
-          <option value="pumpkin">南瓜籽 (钙46mg, 磷123mg)</option>
-          <option value="oats">燕麦 (钙54mg, 磷177mg)</option>
-          <option value="eggs">鸡蛋 (钙56mg, 磷200mg)</option>
-          <option value="porkLoin">里脊肉 (钙18mg, 磷220mg)</option>
-          <option value="chickenBreast">鸡胸肉 (钙14mg, 磷224mg)</option>
-          <option value="beefBrisket">牛腩 (钙20mg, 磷190mg)</option>
-          <option value="beef">牛肉 (钙11mg, 磷172mg)</option>
-          <option value="potatoes">土豆 (钙12mg, 磷40mg)</option>
-          <option value="tomatoes">西红柿 (钙10mg, 磷24mg)</option>
-          <option value="shiitakeMushrooms">香菇 (钙10mg, 磷60mg)</option>
-           <option value="sesame">芝麻 (钙780mg, 磷516mg)</option>
-           <option value="figs">无花果 (钙162mg, 磷67mg)</option>
+    
+
+
+<option value="" disabled selected>选择食物</option>
+<option value="tofu">豆腐 (钙235mg, 磷126mg)</option>
+<option value="driedShrimps">虾皮 (钙991mg, 磷582mg)</option>
+<option value="cheese">奶酪 (钙720mg, 磷512mg)</option>
+<option value="kale">羽衣甘蓝 (钙150mg, 磷92mg)</option>
+<option value="driedSilverFish">银鱼干 (钙550mg, 磷400mg)</option>
+<option value="spinach">菠菜 (钙99mg, 磷49mg)</option>
+<option value="milk">牛奶 (钙104mg, 磷73mg)</option>
+<option value="sardines">沙丁鱼 (钙382mg, 磷476mg)</option>
+<option value="yogurt">酸奶 (钙110mg, 磷95mg)</option>
+<option value="almonds">杏仁 (钙269mg, 磷481mg)</option>
+<option value="broccoli">西兰花 (钙47mg, 磷66mg)</option>
+<option value="salmon">三文鱼 (钙9mg, 磷200mg)</option>
+<option value="pumpkin">南瓜籽 (钙46mg, 磷123mg)</option>
+<option value="oats">燕麦 (钙54mg, 磷177mg)</option>
+<option value="eggs">鸡蛋 (钙56mg, 磷200mg)</option>
+<option value="porkLoin">里脊肉 (钙18mg, 磷220mg)</option>
+<option value="chickenBreast">鸡胸肉 (钙14mg, 磷224mg)</option>
+<option value="beefBrisket">牛腩 (钙20mg, 磷190mg)</option>
+<option value="beef">牛肉 (钙11mg, 磷172mg)</option>
+<option value="potatoes">土豆 (钙12mg, 磷40mg)</option>
+<option value="tomatoes">西红柿 (钙10mg, 磷24mg)</option>
+<option value="shiitakeMushrooms">香菇 (钙10mg, 磷60mg)</option>
+<option value="sesame">芝麻 (钙1404mg, 磷184mg)</option>
+<option value="figs">无花果 (钙162mg, 磷67mg)</option>
+<!-- 数据来源：2022《中国食物成分表（第6版）》与USDA数据库 -->
+          
         </select>
         <input type="number" id="quantity" min="1" value="100" placeholder="克数">
       </div>
@@ -426,36 +431,41 @@
       <div id="intakeLog"></div>
       
       <button id="resetBtn" class="danger">重置记录</button>
+	  <br>
+	   <div class="tip-card">
+       
+        本数据均参考《中国食物成分表（第 6 版）》与 USDA FoodData Central，单位为“每 100g 可食部分”。钙磷比为钙值除以磷值。以上为科学权威标准，有利于骨骼健康和营养平衡追踪。
+      </div>
     </div>
   </div>
 
   <script>
     // 食物数据库（每100g含量）
-   const foods = {
-  tofu: { name: "北豆腐（老豆腐）", calcium: 138, phosphorus: 120, ratio: 1.15, icon: "🧈" },
-  driedShrimps: { name: "虾皮", calcium: 991, phosphorus: 582, ratio: 1.70, icon: "🍤" },
-  cheese: { name: "奶酪", calcium: 721, phosphorus: 512, ratio: 1.41, icon: "🧀" },
-  kale: { name: "羽衣甘蓝", calcium: 150, phosphorus: 92, ratio: 1.63, icon: "🥬" },
-  driedSilverFish: { name: "银鱼干", calcium: 550, phosphorus: 400, ratio: 1.38, icon: "🐠" },
-  spinach: { name: "菠菜", calcium: 99, phosphorus: 49, ratio: 2.02, icon: "🥬" },
-  milk: { name: "牛奶", calcium: 104, phosphorus: 73, ratio: 1.42, icon: "🥛" },
-  sardines: { name: "沙丁鱼", calcium: 382, phosphorus: 476, ratio: 0.80, icon: "🐠" },
-  yogurt: { name: "酸奶", calcium: 110, phosphorus: 95, ratio: 1.16, icon: "🥄" },
-  almonds: { name: "杏仁", calcium: 269, phosphorus: 481, ratio: 0.56, icon: "🌰" },
-  broccoli: { name: "西兰花", calcium: 47, phosphorus: 66, ratio: 0.71, icon: "🥦" },
-  salmon: { name: "三文鱼", calcium: 9, phosphorus: 200, ratio: 0.05, icon: "🐟" },
-  pumpkin: { name: "南瓜籽", calcium: 46, phosphorus: 123, ratio: 0.37, icon: "🎃" },
-  oats: { name: "燕麦", calcium: 54, phosphorus: 177, ratio: 0.31, icon: "🌾" },
-  eggs: { name: "鸡蛋", calcium: 56, phosphorus: 200, ratio: 0.28, icon: "🥚" },
-  porkLoin: { name: "里脊肉", calcium: 18, phosphorus: 220, ratio: 0.08, icon: "🍖" },
-  chickenBreast: { name: "鸡胸肉", calcium: 14, phosphorus: 224, ratio: 0.06, icon: "🍗" },
-  beefBrisket: { name: "牛腩", calcium: 20, phosphorus: 190, ratio: 0.11, icon: "🥩" },
-  beef: { name: "牛肉", calcium: 11, phosphorus: 172, ratio: 0.06, icon: "🥩" },
-  potatoes: { name: "土豆", calcium: 12, phosphorus: 40, ratio: 0.30, icon: "🥔" },
-  tomatoes: { name: "西红柿", calcium: 10, phosphorus: 24, ratio: 0.42, icon: "🍅" },
-  shiitakeMushrooms: { name: "香菇", calcium: 10, phosphorus: 60, ratio: 0.17, icon: "🍄" },
-   sesame: { name: "芝麻", calcium: 780, phosphorus: 516, ratio: 1.51, icon: "⚫" },
-  figs: { name: "无花果", calcium: 162, phosphorus: 67, ratio: 2.42, icon: "🍈" }
+    const foods = {
+tofu:    { name: "北豆腐（老豆腐）",   calcium: 235, phosphorus: 126, ratio: (235/126), icon: "🧈" },
+  driedShrimps:  { name: "虾皮",       calcium: 991, phosphorus: 582, ratio: (991/582), icon: "🍤" },
+  cheese:         { name: "奶酪",       calcium: 720, phosphorus: 512, ratio: (720/512), icon: "🧀" },
+  kale:           { name: "羽衣甘蓝",     calcium: 150, phosphorus: 92, ratio: (150/92), icon: "🥬" },
+  driedSilverFish:{ name: "银鱼干",     calcium: 550, phosphorus: 400, ratio: (550/400), icon: "🐠" },
+  spinach:        { name: "菠菜",       calcium: 99, phosphorus: 49, ratio: (99/49), icon: "🥬" },
+  milk:           { name: "牛奶",       calcium: 104, phosphorus: 73, ratio: (104/73), icon: "🥛" },
+  sardines:       { name: "沙丁鱼",     calcium: 382, phosphorus: 476, ratio: (382/476), icon: "🐠" },
+  yogurt:         { name: "酸奶",       calcium: 110, phosphorus: 95, ratio: (110/95), icon: "🥄" },
+  almonds:        { name: "杏仁",       calcium: 269, phosphorus: 481, ratio: (269/481), icon: "🌰" },
+  broccoli:       { name: "西兰花",     calcium: 47, phosphorus: 66, ratio: (47/66), icon: "🥦" },
+  salmon:         { name: "三文鱼",     calcium: 9, phosphorus: 200, ratio: (9/200), icon: "🐟" },
+  pumpkin:        { name: "南瓜籽",     calcium: 46, phosphorus: 123, ratio: (46/123), icon: "🎃" },
+  oats:           { name: "燕麦",       calcium: 54, phosphorus: 177, ratio: (54/177), icon: "🌾" },
+  eggs:           { name: "鸡蛋",       calcium: 56, phosphorus: 200, ratio: (56/200), icon: "🥚" },
+  porkLoin:       { name: "里脊肉",     calcium: 18, phosphorus: 220, ratio: (18/220), icon: "🍖" },
+  chickenBreast:  { name: "鸡胸肉",     calcium: 14, phosphorus: 224, ratio: (14/224), icon: "🍗" },
+  beefBrisket:    { name: "牛腩",       calcium: 20, phosphorus: 190, ratio: (20/190), icon: "🥩" },
+  beef:           { name: "牛肉",       calcium: 11, phosphorus: 172, ratio: (11/172), icon: "🥩" },
+  potatoes:       { name: "土豆",       calcium: 12, phosphorus: 40, ratio: (12/40), icon: "🥔" },
+  tomatoes:       { name: "西红柿",     calcium: 10, phosphorus: 24, ratio: (10/24), icon: "🍅" },
+  shiitakeMushrooms:{ name: "香菇",    calcium: 10, phosphorus: 60, ratio: (10/60), icon: "🍄" },
+  sesame:         { name: "芝麻",       calcium: 1404, phosphorus: 184, ratio: (1404/184), icon: "⚫" },
+  figs:           { name: "无花果",     calcium: 162, phosphorus: 67, ratio: (162/67), icon: "🍈" }
 };
 
     let totalCalcium = 0;
